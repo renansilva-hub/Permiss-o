@@ -1,0 +1,544 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Alvará de Saída — Departamento de Assuntos do Coração</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@0,400;0,600;0,700;1,500&family=Courier+Prime:wght@400;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --paper: #EAE0C8;
+    --paper-dark: #DED1AF;
+    --ink: #2B211B;
+    --burgundy: #7A2331;
+    --brass: #A6802E;
+    --sage: #5C6B4F;
+    --dusty-rose: #B25763;
+  }
+
+  *{ box-sizing: border-box; }
+
+  body{
+    margin:0;
+    min-height:100vh;
+    background: var(--paper);
+    background-image:
+      repeating-linear-gradient(0deg, rgba(43,33,27,0.025) 0px, rgba(43,33,27,0.025) 1px, transparent 1px, transparent 3px);
+    color: var(--ink);
+    font-family: 'Courier Prime', monospace;
+    display:flex;
+    justify-content:center;
+    padding: 32px 16px 80px;
+  }
+
+  .document{
+    width:100%;
+    max-width: 640px;
+    background: var(--paper-dark);
+    border: 1px solid rgba(43,33,27,0.35);
+    position:relative;
+    padding: 0;
+  }
+
+  .perforation{
+    height:0;
+    border-top: 2px dashed rgba(122,35,49,0.45);
+    margin: 0 20px;
+  }
+
+  header.masthead{
+    padding: 28px 28px 20px;
+    display:flex;
+    justify-content:space-between;
+    align-items:flex-start;
+    gap: 16px;
+  }
+
+  .masthead-text h1{
+    font-family:'Fraunces', serif;
+    font-style: italic;
+    font-weight: 600;
+    font-size: 2rem;
+    line-height:1.05;
+    margin: 0 0 6px;
+    color: var(--burgundy);
+  }
+  .masthead-text p{
+    margin:0;
+    font-size: 0.72rem;
+    letter-spacing: 0.04em;
+    color: rgba(43,33,27,0.7);
+  }
+  .req-number{
+    text-align:right;
+    font-size: 0.7rem;
+    color: rgba(43,33,27,0.6);
+    white-space:nowrap;
+    padding-top:4px;
+  }
+
+  .seal{
+    width: 78px;
+    height: 78px;
+    border-radius: 50%;
+    border: 2.5px solid var(--brass);
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    flex-shrink:0;
+    position:relative;
+    transform: rotate(-8deg);
+    transition: transform .5s cubic-bezier(.34,1.56,.64,1);
+  }
+  .seal::before{
+    content:'';
+    position:absolute;
+    inset:6px;
+    border:1px solid var(--brass);
+    border-radius:50%;
+  }
+  .seal span{
+    font-family:'Fraunces', serif;
+    font-weight:700;
+    font-size: 0.58rem;
+    color: var(--brass);
+    text-align:center;
+    line-height:1.15;
+    letter-spacing:0.02em;
+  }
+  .seal.stamped{
+    transform: rotate(-8deg) scale(1.15);
+    border-color: var(--burgundy);
+  }
+  .seal.stamped span{ color: var(--burgundy); }
+
+  section{
+    padding: 8px 28px 28px;
+  }
+
+  .section-title{
+    font-family:'Fraunces', serif;
+    font-weight:600;
+    font-size: 1.05rem;
+    color: var(--burgundy);
+    margin: 24px 0 14px;
+    display:flex;
+    align-items:center;
+    gap:10px;
+  }
+  .section-title::after{
+    content:'';
+    flex:1;
+    height:1px;
+    background: rgba(122,35,49,0.3);
+  }
+
+  .field{
+    margin-bottom: 16px;
+  }
+  .field label{
+    display:block;
+    font-size: 0.72rem;
+    color: rgba(43,33,27,0.75);
+    margin-bottom: 5px;
+  }
+  .field .field-number{
+    color: var(--brass);
+    font-weight:700;
+    margin-right:4px;
+  }
+  input[type=text], input[type=time], input[type=number], select, textarea{
+    width:100%;
+    font-family:'Courier Prime', monospace;
+    font-size: 0.92rem;
+    background: rgba(255,255,255,0.35);
+    border: none;
+    border-bottom: 1.5px solid rgba(43,33,27,0.4);
+    padding: 8px 4px;
+    color: var(--ink);
+  }
+  input:focus, select:focus, textarea:focus{
+    outline: none;
+    border-bottom-color: var(--burgundy);
+    background: rgba(255,255,255,0.55);
+  }
+  textarea{ resize: vertical; min-height: 54px; }
+
+  .row2{ display:grid; grid-template-columns: 1fr 1fr; gap:16px; }
+
+  .slider-wrap{ display:flex; align-items:center; gap:12px; }
+  input[type=range]{ flex:1; accent-color: var(--burgundy); }
+  .slider-val{ font-weight:700; color:var(--burgundy); min-width: 28px; text-align:center; }
+
+  .checks{ display:flex; flex-direction:column; gap:8px; margin-top: 4px; }
+  .checks label{
+    display:flex; align-items:center; gap:8px;
+    font-size:0.85rem; color: var(--ink);
+    cursor:pointer;
+  }
+  .checks input{ accent-color: var(--burgundy); width:16px; height:16px; }
+
+  button.primary{
+    width:100%;
+    margin-top: 8px;
+    padding: 14px;
+    font-family:'Fraunces', serif;
+    font-weight:600;
+    font-style: italic;
+    font-size: 1.05rem;
+    background: var(--burgundy);
+    color: var(--paper);
+    border: none;
+    cursor:pointer;
+    letter-spacing: 0.01em;
+    transition: transform .15s ease, background .15s ease;
+  }
+  button.primary:hover{ background:#5f1c27; }
+  button.primary:active{ transform: scale(0.985); }
+
+  .status-msg{
+    font-size:0.78rem;
+    text-align:center;
+    margin-top:10px;
+    min-height: 1.2em;
+    color: var(--sage);
+  }
+
+  .config-toggle{
+    background:none;
+    border:none;
+    font-family:'Courier Prime', monospace;
+    font-size:0.7rem;
+    color: rgba(43,33,27,0.55);
+    text-decoration: underline;
+    cursor:pointer;
+    padding:0;
+  }
+
+  .config-box{
+    margin-top: 18px;
+    padding: 16px;
+    border: 1px dashed rgba(43,33,27,0.4);
+    display:none;
+  }
+  .config-box.open{ display:block; }
+  .config-box p{ font-size:0.72rem; line-height:1.5; color: rgba(43,33,27,0.75); margin: 0 0 12px; }
+  .config-box .field{ margin-bottom:10px; }
+  .config-actions{ display:flex; gap:10px; margin-top:8px; }
+  .config-actions button{
+    flex:1;
+    font-family:'Courier Prime', monospace;
+    font-size:0.75rem;
+    padding:8px;
+    border: 1px solid var(--ink);
+    background: transparent;
+    cursor:pointer;
+  }
+
+  .feed{
+    display:flex;
+    flex-direction:column;
+    gap:12px;
+  }
+  .card{
+    border:1px solid rgba(43,33,27,0.3);
+    background: rgba(255,255,255,0.3);
+    padding: 14px 16px;
+  }
+  .card .meta{ font-size:0.68rem; color: rgba(43,33,27,0.55); margin-bottom:6px; }
+  .card .body{ font-size:0.88rem; white-space: pre-wrap; line-height:1.5; }
+  .card .actions{ display:flex; gap:8px; margin-top:10px; }
+  .card .actions button{
+    flex:1;
+    font-family:'Fraunces', serif;
+    font-weight:600;
+    font-size:0.85rem;
+    padding:8px;
+    border:none;
+    cursor:pointer;
+    color:#fff;
+  }
+  .btn-approve{ background: var(--sage); }
+  .btn-deny{ background: var(--dusty-rose); }
+  .btn-cond{ background: var(--brass); }
+
+  .empty{
+    font-size:0.8rem;
+    color: rgba(43,33,27,0.5);
+    font-style: italic;
+    padding: 8px 0;
+  }
+
+  footer{
+    text-align:center;
+    font-size:0.68rem;
+    color: rgba(43,33,27,0.45);
+    padding: 18px 28px 6px;
+  }
+
+  @media (prefers-reduced-motion: reduce){
+    .seal{ transition:none; }
+  }
+</style>
+</head>
+<body>
+
+<div class="document">
+  <header class="masthead">
+    <div class="masthead-text">
+      <h1>Alvará de Saída</h1>
+      <p>Departamento de Assuntos do Coração — via única</p>
+    </div>
+    <div style="display:flex; flex-direction:column; align-items:flex-end; gap:6px;">
+      <div class="seal" id="seal"><span>APROVADO<br>PELO<br>CORAÇÃO</span></div>
+      <div class="req-number" id="reqNumber">Requerimento Nº ----</div>
+    </div>
+  </header>
+
+  <div class="perforation"></div>
+
+  <section>
+
+    <!-- FORM: novo pedido -->
+    <div class="section-title">Novo pedido de saída</div>
+
+    <div class="field">
+      <label><span class="field-number">1.</span>Para onde você vai?</label>
+      <input type="text" id="destino" placeholder="Ex.: happy hour com a galera do trabalho">
+    </div>
+
+    <div class="row2">
+      <div class="field">
+        <label><span class="field-number">2.</span>Saída prevista</label>
+        <input type="time" id="horaSaida">
+      </div>
+      <div class="field">
+        <label><span class="field-number">3.</span>Volta prevista</label>
+        <input type="time" id="horaVolta">
+      </div>
+    </div>
+
+    <div class="field">
+      <label><span class="field-number">4.</span>Motivo declarado</label>
+      <textarea id="motivo" placeholder="Ex.: preciso descomprimir e comer batata frita que não seja a nossa"></textarea>
+    </div>
+
+    <div class="field">
+      <label><span class="field-number">5.</span>Categoria do rolê</label>
+      <select id="categoria">
+        <option>🍺 Rolê rápido e sem crime</option>
+        <option>🎉 Vai ter chopp, cuidado</option>
+        <option>🌙 Existe risco real de virar a noite</option>
+        <option>🛠️ Compromisso chato mas necessário</option>
+      </select>
+    </div>
+
+    <div class="field">
+      <label><span class="field-number">6.</span>Nível de charme empregado neste pedido</label>
+      <div class="slider-wrap">
+        <input type="range" id="charme" min="1" max="10" value="6">
+        <span class="slider-val" id="charmeVal">6</span>
+      </div>
+    </div>
+
+    <div class="field">
+      <label><span class="field-number">7.</span>Compromissos anexos a este alvará</label>
+      <div class="checks">
+        <label><input type="checkbox" id="c1"> Aviso por mensagem se for atrasar</label>
+        <label><input type="checkbox" id="c2"> Volto com um agrado (coxinha, flor, algo)</label>
+        <label><input type="checkbox" id="c3"> Levo o lixo antes de sair, prometo</label>
+        <label><input type="checkbox" id="c4"> Não fico só no celular quando voltar</label>
+      </div>
+    </div>
+
+    <button class="primary" id="btnEnviar">Solicitar autorização</button>
+    <div class="status-msg" id="statusEnvio">&nbsp;</div>
+
+    <div style="text-align:center; margin-top:14px;">
+      <button class="config-toggle" id="toggleConfig">configurar canal do casal</button>
+    </div>
+
+    <div class="config-box" id="configBox">
+      <p>
+        Este app não usa servidor próprio — ele envia os pedidos por um canal grátis (ntfy.sh).
+        Combine os dois códigos abaixo <strong>uma única vez</strong> com sua parceira (por WhatsApp, por exemplo)
+        e usem exatamente os mesmos códigos nos dois celulares.
+      </p>
+      <div class="field">
+        <label>Código do canal de PEDIDOS (você envia, ela recebe)</label>
+        <input type="text" id="topicoPedidos" placeholder="ex.: pedidos-renan-fulana-8823">
+      </div>
+      <div class="field">
+        <label>Código do canal de RESPOSTAS (ela envia, você recebe)</label>
+        <input type="text" id="topicoRespostas" placeholder="ex.: respostas-renan-fulana-4471">
+      </div>
+      <div class="config-actions">
+        <button id="btnGerar">gerar códigos aleatórios</button>
+        <button id="btnSalvar">salvar</button>
+      </div>
+    </div>
+
+    <!-- FEED: pedidos recebidos (visão de quem aprova) -->
+    <div class="section-title">Pedidos recebidos para análise</div>
+    <div class="feed" id="feedPedidos">
+      <div class="empty">nenhum pedido chegou ainda por aqui.</div>
+    </div>
+
+    <!-- FEED: status dos meus pedidos -->
+    <div class="section-title">Andamento dos meus pedidos</div>
+    <div class="feed" id="feedRespostas">
+      <div class="empty">nenhuma resposta chegou ainda por aqui.</div>
+    </div>
+
+  </section>
+
+  <footer>válido apenas mediante boa vontade mútua · sem prazo de validade para o carinho</footer>
+</div>
+
+<script>
+  // ---------- utilidades ----------
+  function randomCode(prefix){
+    return prefix + '-' + Math.random().toString(36).slice(2,8);
+  }
+  function pad(n){ return n.toString().padStart(4,'0'); }
+
+  document.getElementById('reqNumber').textContent =
+    'Requerimento Nº ' + pad(Math.floor(Math.random()*9999));
+
+  // ---------- config (localStorage) ----------
+  const cfg = {
+    pedidos: localStorage.getItem('alvara_topico_pedidos') || '',
+    respostas: localStorage.getItem('alvara_topico_respostas') || ''
+  };
+  document.getElementById('topicoPedidos').value = cfg.pedidos;
+  document.getElementById('topicoRespostas').value = cfg.respostas;
+
+  document.getElementById('toggleConfig').onclick = () => {
+    document.getElementById('configBox').classList.toggle('open');
+  };
+  document.getElementById('btnGerar').onclick = () => {
+    document.getElementById('topicoPedidos').value = randomCode('pedidos');
+    document.getElementById('topicoRespostas').value = randomCode('respostas');
+  };
+  document.getElementById('btnSalvar').onclick = () => {
+    cfg.pedidos = document.getElementById('topicoPedidos').value.trim();
+    cfg.respostas = document.getElementById('topicoRespostas').value.trim();
+    localStorage.setItem('alvara_topico_pedidos', cfg.pedidos);
+    localStorage.setItem('alvara_topico_respostas', cfg.respostas);
+    document.getElementById('configBox').classList.remove('open');
+    conectarCanais();
+  };
+
+  // ---------- slider ----------
+  const charme = document.getElementById('charme');
+  const charmeVal = document.getElementById('charmeVal');
+  charme.oninput = () => charmeVal.textContent = charme.value;
+
+  // ---------- envio de pedido ----------
+  document.getElementById('btnEnviar').onclick = async () => {
+    if(!cfg.pedidos){
+      document.getElementById('statusEnvio').textContent = 'configure o canal do casal primeiro (link abaixo).';
+      document.getElementById('configBox').classList.add('open');
+      return;
+    }
+    const destino = document.getElementById('destino').value || '(não informado)';
+    const saida = document.getElementById('horaSaida').value || '--:--';
+    const volta = document.getElementById('horaVolta').value || '--:--';
+    const motivo = document.getElementById('motivo').value || '(sem motivo declarado)';
+    const categoria = document.getElementById('categoria').value;
+    const charmeN = charme.value;
+    const extras = [];
+    if(document.getElementById('c1').checked) extras.push('avisa se atrasar');
+    if(document.getElementById('c2').checked) extras.push('volta com agrado');
+    if(document.getElementById('c3').checked) extras.push('leva o lixo antes');
+    if(document.getElementById('c4').checked) extras.push('sem celular ao voltar');
+
+    const texto =
+`Destino: ${destino}
+Janela: ${saida} → ${volta}
+Motivo: ${motivo}
+Categoria: ${categoria}
+Charme empregado: ${charmeN}/10
+Compromissos: ${extras.length ? extras.join(', ') : 'nenhum assumido (ousado)'}`;
+
+    const seal = document.getElementById('seal');
+    seal.classList.add('stamped');
+    setTimeout(() => seal.classList.remove('stamped'), 900);
+
+    try{
+      await fetch('https://ntfy.sh/' + encodeURIComponent(cfg.pedidos), {
+        method: 'POST',
+        headers: {
+          'Title': 'Novo pedido de saída 📋',
+          'Tags': 'love_letter'
+        },
+        body: texto
+      });
+      document.getElementById('statusEnvio').textContent = 'pedido enviado — aguardando análise do coração competente.';
+    }catch(e){
+      document.getElementById('statusEnvio').textContent = 'não consegui enviar. confira sua internet e tente de novo.';
+    }
+  };
+
+  // ---------- feeds ao vivo ----------
+  function addCard(feedId, meta, body, actions){
+    const feed = document.getElementById(feedId);
+    const emptyMsg = feed.querySelector('.empty');
+    if(emptyMsg) emptyMsg.remove();
+    const card = document.createElement('div');
+    card.className = 'card';
+    card.innerHTML = `<div class="meta">${meta}</div><div class="body"></div>`;
+    card.querySelector('.body').textContent = body;
+    if(actions){
+      const act = document.createElement('div');
+      act.className = 'actions';
+      act.innerHTML = actions;
+      card.appendChild(act);
+    }
+    feed.prepend(card);
+  }
+
+  async function responder(texto, decisao){
+    if(!cfg.respostas) return;
+    const emojis = { aprovado: '✅ Aprovado', negado: '❌ Negado, hoje não', condicional: '🤝 Aprovado com condição' };
+    await fetch('https://ntfy.sh/' + encodeURIComponent(cfg.respostas), {
+      method: 'POST',
+      headers: { 'Title': emojis[decisao], 'Tags': 'love_letter' },
+      body: 'Sobre: "' + texto.split('\n')[0] + '" — decisão: ' + emojis[decisao]
+    });
+  }
+
+  let esPedidos, esRespostas;
+  function conectarCanais(){
+    if(esPedidos) esPedidos.close();
+    if(esRespostas) esRespostas.close();
+
+    if(cfg.pedidos){
+      esPedidos = new EventSource('https://ntfy.sh/' + encodeURIComponent(cfg.pedidos) + '/sse');
+      esPedidos.onmessage = (e) => {
+        const data = JSON.parse(e.data);
+        if(data.event !== 'message') return;
+        const texto = data.message;
+        const meta = new Date(data.time * 1000).toLocaleString('pt-BR');
+        addCard('feedPedidos', meta, texto,
+          `<button class="btn-approve" onclick="responder(\`${texto.replace(/`/g,"'")}\`,'aprovado')">Aprovar</button>
+           <button class="btn-cond" onclick="responder(\`${texto.replace(/`/g,"'")}\`,'condicional')">Com condição</button>
+           <button class="btn-deny" onclick="responder(\`${texto.replace(/`/g,"'")}\`,'negado')">Negar</button>`);
+      };
+    }
+    if(cfg.respostas){
+      esRespostas = new EventSource('https://ntfy.sh/' + encodeURIComponent(cfg.respostas) + '/sse');
+      esRespostas.onmessage = (e) => {
+        const data = JSON.parse(e.data);
+        if(data.event !== 'message') return;
+        const meta = new Date(data.time * 1000).toLocaleString('pt-BR');
+        addCard('feedRespostas', meta, data.message, null);
+      };
+    }
+  }
+  conectarCanais();
+</script>
+
+</body>
+</html>
