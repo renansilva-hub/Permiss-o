@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Permissão de Saída</title>
+<title>Permissão</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@0,400;0,600;0,700;1,500&family=Courier+Prime:wght@400;700&display=swap" rel="stylesheet">
 <style>
@@ -213,6 +213,42 @@
   .btn-deny{ background: var(--dusty-rose); }
   .btn-cond{ background: var(--brass); }
 
+  .choice-grid{
+    display:grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 14px;
+    margin-bottom: 8px;
+  }
+  .choice-card{
+    font-family:'Fraunces', serif;
+    background: rgba(255,255,255,0.3);
+    border: 1.5px solid rgba(43,33,27,0.35);
+    padding: 20px 12px;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    gap:10px;
+    cursor:pointer;
+    color: var(--ink);
+    transition: border-color .15s ease, background .15s ease;
+  }
+  .choice-card:hover{ border-color: var(--burgundy); }
+  .choice-card.active{
+    border-color: var(--burgundy);
+    background: rgba(122,35,49,0.08);
+  }
+  .choice-icon{ font-size: 1.8rem; }
+  .choice-label{
+    font-style: italic;
+    font-weight: 600;
+    font-size: 0.95rem;
+    line-height:1.25;
+    text-align:center;
+  }
+
+  .form-panel{ display:none; }
+  .form-panel.open{ display:block; }
+
   .empty{
     font-size:0.8rem;
     color: rgba(43,33,27,0.5);
@@ -246,7 +282,21 @@
 
   <section>
 
+    <!-- SELETOR: escolha do tipo de permissão -->
+    <div class="section-title">O que você precisa pedir hoje?</div>
+    <div class="choice-grid">
+      <button class="choice-card" id="escolherSaida">
+        <span class="choice-icon">🚪</span>
+        <span class="choice-label">Nova permissão<br>de saída</span>
+      </button>
+      <button class="choice-card" id="escolherCompra">
+        <span class="choice-icon">🛍️</span>
+        <span class="choice-label">Nova permissão<br>de compra</span>
+      </button>
+    </div>
+
     <!-- FORM: novo pedido -->
+    <div id="formSaida" class="form-panel">
     <div class="section-title">Novo pedido de saída</div>
 
     <div class="field">
@@ -292,6 +342,45 @@
 
     <button class="primary" id="btnEnviar">Solicitar autorização</button>
     <div class="status-msg" id="statusEnvio">&nbsp;</div>
+    </div>
+
+    <!-- FORM: nova solicitação de compra -->
+    <div id="formCompra" class="form-panel">
+    <div class="section-title">Nova solicitação de compra</div>
+
+    <div class="field">
+      <label><span class="field-number">1.</span>Categoria</label>
+      <select id="categoriaCompra">
+        <option>🍔 Lanche / comida</option>
+        <option>👕 Roupa</option>
+        <option>🧴 Perfume / cosmético</option>
+        <option>📱 Eletrônico</option>
+        <option>🎁 Outro</option>
+      </select>
+    </div>
+
+    <div class="field">
+      <label><span class="field-number">2.</span>O que é, exatamente?</label>
+      <input type="text" id="itemCompra" placeholder="Ex.: aquele tênis que eu já mostrei três vezes">
+    </div>
+
+    <div class="field">
+      <label><span class="field-number">3.</span>Urgência</label>
+      <select id="urgenciaCompra">
+        <option>Pode esperar o mês virar</option>
+        <option>Preciso essa semana</option>
+        <option>É pra ontem</option>
+      </select>
+    </div>
+
+    <div class="field">
+      <label><span class="field-number">4.</span>Justificativa</label>
+      <textarea id="justificativaCompra" placeholder="Ex.: o antigo já era, juro"></textarea>
+    </div>
+
+    <button class="primary" id="btnEnviarCompra">Solicitar compra</button>
+    <div class="status-msg" id="statusEnvioCompra">&nbsp;</div>
+    </div>
 
     <div style="text-align:center; margin-top:14px;">
       <button class="config-toggle" id="toggleConfig">configurar canal do casal</button>
@@ -335,6 +424,21 @@
 </div>
 
 <script>
+  // ---------- seletor de formulário ----------
+  const formSaida = document.getElementById('formSaida');
+  const formCompra = document.getElementById('formCompra');
+  const escolherSaida = document.getElementById('escolherSaida');
+  const escolherCompra = document.getElementById('escolherCompra');
+
+  function mostrarForm(qual){
+    formSaida.classList.toggle('open', qual === 'saida');
+    formCompra.classList.toggle('open', qual === 'compra');
+    escolherSaida.classList.toggle('active', qual === 'saida');
+    escolherCompra.classList.toggle('active', qual === 'compra');
+  }
+  escolherSaida.onclick = () => mostrarForm('saida');
+  escolherCompra.onclick = () => mostrarForm('compra');
+
   // ---------- utilidades ----------
   function randomCode(prefix){
     return prefix + '-' + Math.random().toString(36).slice(2,8);
@@ -405,6 +509,39 @@ Compromissos: ${extras.length ? extras.join(', ') : 'nenhum assumido (ousado)'}`
       document.getElementById('statusEnvio').textContent = 'pedido enviado — aguardando análise do coração competente.';
     }catch(e){
       document.getElementById('statusEnvio').textContent = 'não consegui enviar. confira sua internet e tente de novo.';
+    }
+  };
+
+  // ---------- envio de solicitação de compra ----------
+  document.getElementById('btnEnviarCompra').onclick = async () => {
+    if(!cfg.pedidos){
+      document.getElementById('statusEnvioCompra').textContent = 'configure o canal do casal primeiro (link abaixo).';
+      document.getElementById('configBox').classList.add('open');
+      return;
+    }
+    const categoria = document.getElementById('categoriaCompra').value;
+    const item = document.getElementById('itemCompra').value || '(não informado)';
+    const urgencia = document.getElementById('urgenciaCompra').value;
+    const justificativa = document.getElementById('justificativaCompra').value || '(sem justificativa declarada)';
+
+    const texto =
+`Categoria: ${categoria}
+Item: ${item}
+Urgência: ${urgencia}
+Justificativa: ${justificativa}`;
+
+    try{
+      await fetch('https://ntfy.sh/' + encodeURIComponent(cfg.pedidos), {
+        method: 'POST',
+        headers: {
+          'Title': 'Nova solicitação de compra 🛍️',
+          'Tags': 'shopping_bags'
+        },
+        body: texto
+      });
+      document.getElementById('statusEnvioCompra').textContent = 'solicitação enviada — aguardando análise do coração competente.';
+    }catch(e){
+      document.getElementById('statusEnvioCompra').textContent = 'não consegui enviar. confira sua internet e tente de novo.';
     }
   };
 
