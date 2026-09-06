@@ -48,70 +48,24 @@
   }
 
   header.masthead{
-    padding: 28px 28px 20px;
-    display:flex;
-    justify-content:space-between;
-    align-items:flex-start;
-    gap: 16px;
+    padding: 32px 28px 20px;
+    text-align:center;
   }
 
   .masthead-text h1{
     font-family:'Fraunces', serif;
     font-style: italic;
     font-weight: 600;
-    font-size: 2rem;
+    font-size: 2.1rem;
     line-height:1.05;
-    margin: 0 0 6px;
+    margin: 0 0 10px;
     color: var(--burgundy);
   }
-  .masthead-text p{
-    margin:0;
-    font-size: 0.72rem;
-    letter-spacing: 0.04em;
-    color: rgba(43,33,27,0.7);
-  }
   .req-number{
-    text-align:right;
+    text-align:center;
     font-size: 0.7rem;
     color: rgba(43,33,27,0.6);
-    white-space:nowrap;
-    padding-top:4px;
   }
-
-  .seal{
-    width: 78px;
-    height: 78px;
-    border-radius: 50%;
-    border: 2.5px solid var(--brass);
-    display:flex;
-    align-items:center;
-    justify-content:center;
-    flex-shrink:0;
-    position:relative;
-    transform: rotate(-8deg);
-    transition: transform .5s cubic-bezier(.34,1.56,.64,1);
-  }
-  .seal::before{
-    content:'';
-    position:absolute;
-    inset:6px;
-    border:1px solid var(--brass);
-    border-radius:50%;
-  }
-  .seal span{
-    font-family:'Fraunces', serif;
-    font-weight:700;
-    font-size: 0.58rem;
-    color: var(--brass);
-    text-align:center;
-    line-height:1.15;
-    letter-spacing:0.02em;
-  }
-  .seal.stamped{
-    transform: rotate(-8deg) scale(1.15);
-    border-color: var(--burgundy);
-  }
-  .seal.stamped span{ color: var(--burgundy); }
 
   section{
     padding: 8px 28px 28px;
@@ -166,10 +120,6 @@
   textarea{ resize: vertical; min-height: 54px; }
 
   .row2{ display:grid; grid-template-columns: 1fr 1fr; gap:16px; }
-
-  .slider-wrap{ display:flex; align-items:center; gap:12px; }
-  input[type=range]{ flex:1; accent-color: var(--burgundy); }
-  .slider-val{ font-weight:700; color:var(--burgundy); min-width: 28px; text-align:center; }
 
   .checks{ display:flex; flex-direction:column; gap:8px; margin-top: 4px; }
   .checks label{
@@ -287,13 +237,9 @@
 <div class="document">
   <header class="masthead">
     <div class="masthead-text">
-      <h1>Alvará de Saída</h1>
-      <p>Departamento de Assuntos do Coração — via única</p>
+      <h1>Permissão de Saída</h1>
     </div>
-    <div style="display:flex; flex-direction:column; align-items:flex-end; gap:6px;">
-      <div class="seal" id="seal"><span>APROVADO<br>PELO<br>CORAÇÃO</span></div>
-      <div class="req-number" id="reqNumber">Requerimento Nº ----</div>
-    </div>
+    <div class="req-number" id="reqNumber">Requerimento Nº ----</div>
   </header>
 
   <div class="perforation"></div>
@@ -335,15 +281,7 @@
     </div>
 
     <div class="field">
-      <label><span class="field-number">6.</span>Nível de charme empregado neste pedido</label>
-      <div class="slider-wrap">
-        <input type="range" id="charme" min="1" max="10" value="6">
-        <span class="slider-val" id="charmeVal">6</span>
-      </div>
-    </div>
-
-    <div class="field">
-      <label><span class="field-number">7.</span>Compromissos anexos a este alvará</label>
+      <label><span class="field-number">6.</span>Compromissos anexos a este alvará</label>
       <div class="checks">
         <label><input type="checkbox" id="c1"> Aviso por mensagem se for atrasar</label>
         <label><input type="checkbox" id="c2"> Volto com um agrado (coxinha, flor, algo)</label>
@@ -430,11 +368,6 @@
     conectarCanais();
   };
 
-  // ---------- slider ----------
-  const charme = document.getElementById('charme');
-  const charmeVal = document.getElementById('charmeVal');
-  charme.oninput = () => charmeVal.textContent = charme.value;
-
   // ---------- envio de pedido ----------
   document.getElementById('btnEnviar').onclick = async () => {
     if(!cfg.pedidos){
@@ -447,7 +380,6 @@
     const volta = document.getElementById('horaVolta').value || '--:--';
     const motivo = document.getElementById('motivo').value || '(sem motivo declarado)';
     const categoria = document.getElementById('categoria').value;
-    const charmeN = charme.value;
     const extras = [];
     if(document.getElementById('c1').checked) extras.push('avisa se atrasar');
     if(document.getElementById('c2').checked) extras.push('volta com agrado');
@@ -459,12 +391,7 @@
 Janela: ${saida} → ${volta}
 Motivo: ${motivo}
 Categoria: ${categoria}
-Charme empregado: ${charmeN}/10
 Compromissos: ${extras.length ? extras.join(', ') : 'nenhum assumido (ousado)'}`;
-
-    const seal = document.getElementById('seal');
-    seal.classList.add('stamped');
-    setTimeout(() => seal.classList.remove('stamped'), 900);
 
     try{
       await fetch('https://ntfy.sh/' + encodeURIComponent(cfg.pedidos), {
